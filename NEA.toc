@@ -1,0 +1,9 @@
+\contentsline {chapter}{\numberline {1}Analysis}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}My Project}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Othello}{2}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Rules}{2}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Computer Othello}{2}{subsection.1.2.2}%
+\contentsline {subsubsection}{Minimax}{3}{section*.5}%
+\contentsline {subsubsection}{Evalutaion Functions}{3}{section*.6}%
+\contentsline {paragraph}{Disc-Square Tables:}{3}{section*.7}%
+\contentsline {paragraph}{Mobility-Based Evaluation:}{3}{section*.8}%

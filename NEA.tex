@@ -1,0 +1,108 @@
+\documentclass[12pt, a4paper]{report}
+\usepackage{svg}
+\usepackage{wrapfig}
+\usepackage[font=footnotesize]{caption}
+\usepackage[margin=.5in]{geometry}
+\usepackage{hyperref}
+\usepackage{forest}
+\usepackage{lipsum}
+\setlength{\intextsep}{0mm}
+\svgpath{{svg/}}
+\svgsetup{inkscapelatex=false}
+
+\begin{document}
+\title{NEA Documentation}
+\author{Hugh O'Donnell}
+\date{November 2022}
+\maketitle
+\tableofcontents
+\chapter{Analysis}
+\section{My Project}
+Othello is an abstract strategy game played on an 8 by 8 board.
+I will implement a digital version of Othello with a graphical user interface and a computer player.
+The end user will be Eugene O'Donnell.
+\section{Othello}
+\subsection{Rules}
+
+\begin{wrapfigure}{r}{0pt}
+	\centering
+	\includesvg[width=.3\textwidth]{initial_othello}
+	\caption{An Othello board's starting position. By convention, the black piece closest to each player is on that player's left,
+	although this is inconsequential due to symmetry.}
+	\label{fig:init}
+\end{wrapfigure}
+
+Othello is an abstract strategy game. Two players, black and white, play against each other on an 8 by 8 board placing one disc on each turn.
+Players alternate turns with black moving first. If a player has no legal moves and it is their turn, it is the other player's turn again.
+If both players have no legal moves, the game ends, and the winner, if they exist, is the player with the most discs of their colour on the board.
+If the winner does not exist, i.e. when there are the same number of black discs and white discs on the board, the game ends in a draw.
+
+
+When a player makes a move, they place a disc on the board with their colour facing upwards.
+If there is a continuous line of discs of the opposing colour between the disc just placed and another disc of the player’s colour, those discs of the opposing colour are captured (flipped), and thus changed to the colour of the player who made the move.
+If, and only if, a move  causes discs to be flipped, that move is legal.
+The official rules are here: \url{https://www.worldothello.org/about/about-othello/othello-rules/official-rules/english}.
+
+\begin{wrapfigure}[9]{l}{0pt}
+	\centering
+		\includesvg[width=.25\textwidth]{move_example}
+		\caption{The position in~\ref{fig:init} if black plays D5}
+\end{wrapfigure}
+
+\subsection{Computer Othello}
+
+Almost all algorithms for estimating a good move for an abstract strategy game such as Othello involve an inexhaustive search of the game tree.
+The game tree consists of nodes which represent different Othello positions, and edges from parent nodes to child nodes
+represent the fact that the position which the child node represents can be reached in exactly one move from the position
+represented by the parent node.
+An evaluation function, i.e. a function of a position which evaluates how advantageous that position is to a particular player,
+is common to many, but not all, game-playing algorithms.
+
+\begin{wrapfigure}{r}{0pt}
+	\begin{forest}
+		[\includesvg{initial_othello}
+			[\includesvg{m3}]
+			[\includesvg{move_example} [\includesvg{m4}], [\includesvg{m5}]]
+		]
+	\end{forest}
+	\caption{A small subgraph of Othello's game tree. The size of the whole tree is estimated at \(10^{54}\) nodes.}
+\end{wrapfigure}\leavevmode
+
+\subsubsection{Minimax}
+
+Minimax is a brute force algorithm for searching the game tree, parameterized by an evaluation function, \(f\) and a search depth, \(n\).
+All of the possible possible positions after \(n\) moves will be evaluated with \(f\).
+The move which \em guarantees \em the most advantageous position (the one with the greatest evaluation) is chosen.
+Minimax at depth \(n\) has time complexity \(\mathcal{O}(b^n)\) and space complexity \(\mathcal{O}(bn)\), where \(b\) is the branching factor,
+i.e. the average number of legal moves in an Othello position, which for Othello is about 10. Many of the other
+algorithms for finding a good move are similar to minimax. I will use minimax with a variation of alpha-beta pruning in order
+to find the best move given some particular Othello position. As minimax is better at greater depths, the depth
+can serve as a difficulty which the end user can adjust.
+
+\subsubsection{Evalutaion Functions}
+
+The evaluation function is crucial to the strength of the computer player; it is far more important than the search function.
+There are several ways to evaluate an othello position. I will discuss two below.
+
+\paragraph{Disc-Square Tables:}
+
+A disc-square table assigns some value to each square on an Othello board, with squares with higher values being better squares
+to have a piece on. The value of a position can be calculated by subtracting the sum of
+the squares which white occupies from the sum of those which black occupies. The table can be changed between stages of the game
+because the most important squares to occupy change over the course of the game.
+
+\paragraph{Mobility-Based Evaluation:}
+
+This evaluation function gives preference to positions with more available moves and fewer frontier discs, i.e. discs adjacent to
+empty squares. In Othello, there is no stalemate; if a player has no legal moves, they forfeit their turn, which is unfavourable
+and something which this evaluation function optimizes for. Mobility-based evaluation is generally better than disc-square tables because
+the mobility of a player's position changes less from turn to turn than the score from a disc-square table, as rows of discs can be
+flipped which drastically changes the disc-square table evaluation.
+\\ \\
+I will use a combination of both methods.
+I will value occupance of the corners, everything else will be mobility-based evaluation.
+It is impossible to flip a disc at one of the corners so this method does not succumb the aforementioned shortcoming of a disc-square table. 
+
+
+\end{document}
+
