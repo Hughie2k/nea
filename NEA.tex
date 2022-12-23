@@ -1,11 +1,51 @@
 \documentclass[12pt, a4paper]{report}
 \usepackage{svg}
 \usepackage{wrapfig}
+\makeatletter
+ \newcommand\wrapfill{\par
+   \ifx\parshape\WF@fudgeparshape
+   \nobreak
+   \vskip-\baselineskip
+   \vskip\c@WF@wrappedlines\baselineskip
+   \allowbreak
+   \WFclear
+   \fi
+ }
 \usepackage[font=footnotesize]{caption}
 \usepackage[margin=.5in]{geometry}
 \usepackage{hyperref}
 \usepackage{forest}
 \usepackage{lipsum}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{listings-rust}
+\usepackage{xcolor}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
 \setlength{\intextsep}{0mm}
 \svgpath{{svg/}}
 \svgsetup{inkscapelatex=false}
@@ -23,10 +63,11 @@ I will implement a digital version of Othello with a graphical user interface an
 The end user will be Eugene O'Donnell.
 \section{Othello}
 \subsection{Rules}
-
+\wrapfill
+	
 \begin{wrapfigure}{r}{0pt}
 	\centering
-	\includesvg[width=.3\textwidth]{initial_othello}
+	\includesvg[width=.28\textwidth]{initial_othello}
 	\caption{An Othello board's starting position. By convention, the black piece closest to each player is on that player's left,
 	although this is inconsequential due to symmetry.}
 	\label{fig:init}
@@ -42,11 +83,12 @@ When a player makes a move, they place a disc on the board with their colour fac
 If there is a continuous line of discs of the opposing colour between the disc just placed and another disc of the player’s colour, those discs of the opposing colour are captured (flipped), and thus changed to the colour of the player who made the move.
 If, and only if, a move  causes discs to be flipped, that move is legal.
 The official rules are here: \url{https://www.worldothello.org/about/about-othello/othello-rules/official-rules/english}.
+\wrapfill
 
 \begin{wrapfigure}[9]{l}{0pt}
 	\centering
-		\includesvg[width=.25\textwidth]{move_example}
-		\caption{The position in~\ref{fig:init} if black plays D5}
+		\includesvg[width=.28\textwidth]{move_example}
+		\caption{The position in~\ref{fig:init} if black plays E6}
 \end{wrapfigure}
 
 \subsection{Computer Othello}
@@ -56,17 +98,7 @@ The game tree consists of nodes which represent different Othello positions, and
 represent the fact that the position which the child node represents can be reached in exactly one move from the position
 represented by the parent node.
 An evaluation function, i.e. a function of a position which evaluates how advantageous that position is to a particular player,
-is common to many, but not all, game-playing algorithms.
-
-\begin{wrapfigure}{r}{0pt}
-	\begin{forest}
-		[\includesvg{initial_othello}
-			[\includesvg{m3}]
-			[\includesvg{move_example} [\includesvg{m4}], [\includesvg{m5}]]
-		]
-	\end{forest}
-	\caption{A small subgraph of Othello's game tree. The size of the whole tree is estimated at \(10^{54}\) nodes.}
-\end{wrapfigure}\leavevmode
+is common to many, but not all, game-playing algorithms. 
 
 \subsubsection{Minimax}
 
@@ -75,9 +107,25 @@ All of the possible possible positions after \(n\) moves will be evaluated with 
 The move which \em guarantees \em the most advantageous position (the one with the greatest evaluation) is chosen.
 Minimax at depth \(n\) has time complexity \(\mathcal{O}(b^n)\) and space complexity \(\mathcal{O}(bn)\), where \(b\) is the branching factor,
 i.e. the average number of legal moves in an Othello position, which for Othello is about 10. Many of the other
-algorithms for finding a good move are similar to minimax. I will use minimax with a variation of alpha-beta pruning in order
-to find the best move given some particular Othello position. As minimax is better at greater depths, the depth
+algorithms for finding a good move are similar to minimax.
+I will use minimax with a variation of alpha-beta pruning in order
+to find the best move given some particular Othello position.
+Alpha-beta pruning is purely an optimization of minimax; it does not change the result.
+As minimax is better at greater depths, the depth
 can serve as a difficulty which the end user can adjust.
+\wrapfill
+
+\begin{figure}[h]
+	\centering
+	\begin{forest}
+		[\includesvg{initial_othello}
+			[\includesvg{m3}]
+			[\includesvg{move_example} [\includesvg{m4}], [\includesvg{m5}]]
+		]
+	\end{forest}
+	\caption{A small subgraph of Othello's game tree. The size of the whole tree is estimated at \(10^{54}\) nodes.}
+\end{figure}
+
 
 \subsubsection{Evalutaion Functions}
 
@@ -104,5 +152,131 @@ I will value occupance of the corners, everything else will be mobility-based ev
 It is impossible to flip a disc at one of the corners so this method does not succumb the aforementioned shortcoming of a disc-square table. 
 
 
-\end{document}
+\section{End User and Requirements}
+The end user is Eugene O'Donnell, my father.
+He wants a digital implementation of Othello because it is easier to play against a computer than to find a human to play against and carry the board and pieces around.
+From conversations with him about the project, I have compiled the following list of requirements:
+\begin{enumerate}
+\item A digital Othello board on which the user can click on a square to place a disc there.
+\item Show the number of discs each player has next to the board.
+\item A computer player with an adjustable difficulty, which is strong enough to beat the supervisor without taking more than five seconds for any single move.
+\item An option to change the colours used to draw the board and discs with colour pickers.
+\item An option to choose between playing as black or white.
+\item All of a player's legal moves should be shown on the board.
+\end{enumerate}
 
+\section{Proposed Solutions}
+Here are my evaluations and decisions over how I will solve the objectives.
+\subsection{Programming Language}
+I know Python and C++ well enough for this project.
+I am also considering using Rust, although my knowledge of it is limited, because it is memory safe and about as fast as C++.
+I know I will have to use multi-threading in some capacity in order to have the GUI (Graphical User Interface) respond while the minimax is running.
+I want the minimax to run as fast as possible in order to search as far ahead as possible within a reasonable amount of time.
+\subsubsection{Advantages and Disadvantages}
+\begin{tabular}{| p{0.3\textwidth} | p{0.3\textwidth} | p{0.3\textwidth} |}
+	\hline
+	 	Python                  & C++                      & Rust                      \\ \hline
+	 	\begin{enumerate}
+		 	\item[+] Memory safe (garbage collected).
+		 	\item[+] I have experience.
+		 	\item[+] Interpreted, so more portable than Rust or Python.
+		 	\item[-] Interpreted, so executes relatively slowly.
+	 	\end{enumerate}
+	 	& \begin{enumerate}
+		 	\item[+] Fast.
+		 	\item[+] I have experience.
+		 	\item[+] Statically typed.
+		 	\item[-] Code must be compiled each time, which can take a long time.
+		 	\item[-] Not memory safe, so bugs are more easily created.
+	 	\end{enumerate}
+	 	& \begin{enumerate}
+	 		\item[+] Memory safe (borrow checker), in fact data races are impossible.
+	 		\item[+] Fast.
+	 		\item[+] Statically typed.
+	 		\item[-] Code must be compiled each time, and the compilation is slower than in C++.
+	 		\item[-] I don't have much experience.
+	 		\item[-] There are fewer libraries available than in Python or C++
+	 	\end{enumerate}
+	\\ \hline
+\end{tabular}
+\\ \\
+I have decided to go with Rust, because I want to learn it and the impossibility of data races eliminates a whole class of bugs which could be introduced in the implementation of multithreading.
+
+\subsection{Graphical User Interface Library}
+I decided to use FLTK because there are not too many GUI libraries for Rust, and this one seemed to be well documented and well used, as it was originally a C++ library.
+I do not know that much about all the other GUI libraries because I have not tried many of them, but FLTK works well enough for me so I will use it.
+
+\section{Objectives}
+Here are my objectives, based on the end user's requirements:
+\begin{enumerate}
+	\item Upon launching the program, a graphical user interface should be shown to the user.
+	\item When playing Othello, a disc should be placed on the board when a square is clicked if and only if it is the human player's turn, and the move which they are making is legal.
+	\item The difficulty of the computer player must be selectable through the graphical user interface.
+	\item The colour of the human must be selectable through the graphical user interface.
+	\item The user must be able to choose the colour of the discs and squares on the board with a colour picker.
+	\item The computer player must make moves good enough to beat the end user, taking no longer than five seconds to make one move.
+	\item The graphical user interface should display the number of discs belonging to each player on the board.
+	\item When the game is over, the graphical user interface should show whether the game was won or drawn, and if the game was won, which player won.
+	\item The graphical user interface must remain responsive while the computer player is computing a move.
+\end{enumerate}
+
+\chapter{Documented Design}
+I will explain the data structures I used first, then the algorithms. This is because an understanding of the data structures used is needed to understand some of the algorithms.
+\section{Data Structures}
+\subsection{\texttt{BoardState}}
+A variable of type \texttt{BoardState} is either \texttt{BoardState::Won}, \texttt{BoardState::Drawn}, or \texttt{BoardState::Ongoing}.
+\texttt{BoardState} is implemented as an \texttt{enum} like so:
+
+\begin{lstlisting}[language=Rust]
+#[derive(Clone, PartialEq, Debug, Copy)]
+pub enum BoardState {
+    Won, // to_move has won, so we don't need a `BoardState::Lost`
+    Drawn,
+    Ongoing,
+}
+
+#[derive(Clone, Copy)]
+pub struct Pieces {
+    pub bits: u64,
+}
+
+impl Iterator for Pieces {
+    type Item = u64;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.bits == 0 {
+            None
+        } else {
+            let bit = self.bits ^ (self.bits & (self.bits - 1));
+            self.bits &= self.bits - 1;
+            Some(bit)
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct Board {
+    pub to_move: Pieces,
+    pub waiting: Pieces,
+    pub black_moving: bool,
+    pub board_state: BoardState,
+}
+
+impl Default for Board {
+    fn default() -> Self {
+        Board {
+            black_moving: true,
+            board_state: BoardState::Ongoing,
+            waiting: Pieces {
+                bits: 0b1000000001000000000000000000000000000,
+            },
+            to_move: Pieces {
+                bits: 0b100000010000000000000000000000000000,
+            },
+        }
+    }
+}
+
+\end{lstlisting}
+
+
+\end{document}

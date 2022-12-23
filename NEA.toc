@@ -3,7 +3,16 @@
 \contentsline {section}{\numberline {1.2}Othello}{2}{section.1.2}%
 \contentsline {subsection}{\numberline {1.2.1}Rules}{2}{subsection.1.2.1}%
 \contentsline {subsection}{\numberline {1.2.2}Computer Othello}{2}{subsection.1.2.2}%
-\contentsline {subsubsection}{Minimax}{3}{section*.5}%
+\contentsline {subsubsection}{Minimax}{3}{section*.4}%
 \contentsline {subsubsection}{Evalutaion Functions}{3}{section*.6}%
 \contentsline {paragraph}{Disc-Square Tables:}{3}{section*.7}%
 \contentsline {paragraph}{Mobility-Based Evaluation:}{3}{section*.8}%
+\contentsline {section}{\numberline {1.3}End User and Requirements}{4}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Proposed Solutions}{4}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Programming Language}{4}{subsection.1.4.1}%
+\contentsline {subsubsection}{Advantages and Disadvantages}{4}{section*.9}%
+\contentsline {subsection}{\numberline {1.4.2}Graphical User Interface Library}{5}{subsection.1.4.2}%
+\contentsline {section}{\numberline {1.5}Objectives}{5}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Documented Design}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Data Structures}{6}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}\texttt {BoardState}}{6}{subsection.2.1.1}%
